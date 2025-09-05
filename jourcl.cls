@@ -23,7 +23,7 @@
 
 % Top position of reviewers
 \DeclareOption{top}{%
-    \newcommand{\addreviewersPosition}{1}
+    \newcommand{\addreviewersPosition}{1}
 }
 % Top position of reviewers
 \DeclareOption{afterToEditor}{%
@@ -75,6 +75,39 @@
 \def\ImagePath#1{\def\@ImagePath{#1}}
 \newcommand{\pImagePath}{\@ImagePath}
 
+% Logo width, height OR scale, use default values if not specified
+\def\LogoWidth#1{\def\@LogoWidth{#1}}
+\newcommand{\pLogoWidth}{\ifcsname @LogoWidth\endcsname\@LogoWidth\else 7cm\fi}
+\def\LogoHeight#1{\def\@LogoHeight{#1}}
+\newcommand{\pLogoHeight}{\ifcsname @LogoHeight\endcsname\@LogoHeight\else 4cm\fi}
+\def\LogoScale#1{\def\@LogoScale{#1}}
+\newcommand{\pLogoScale}{\ifcsname @LogoScale\endcsname\@LogoScale\else 1.0\fi}
+% Command to switch which \includegraphics to use, based on set commands in .tex
+\newcommand{\includelogo}{%
+  \ifcsname @LogoScale\endcsname
+    % if Scale is set: use only scale
+    \includegraphics[scale=\@LogoScale]{\pImagePath}%
+  \else
+    % if Scale is not set: check width/height
+    \ifcsname @LogoWidth\endcsname
+      \ifcsname @LogoHeight\endcsname
+        % Both width and height are set
+        \includegraphics[width=\@LogoWidth,height=\@LogoHeight,keepaspectratio]{\pImagePath}%
+      \else
+        % Only width is set
+        \includegraphics[width=\@LogoWidth]{\pImagePath}%
+      \fi
+    \else
+      \ifcsname @LogoHeight\endcsname
+        % Only height is set
+        \includegraphics[height=\@LogoHeight]{\pImagePath}%
+      \else
+        % if none is set: use defaults
+        \includegraphics[width=7cm,height=4cm,keepaspectratio]{\pImagePath}%
+      \fi
+    \fi
+  \fi
+}
 %----------------------------------------------------------------------
 % new command for the information of the author
 \newcommand{\aboutme}[1]{
@@ -86,7 +119,7 @@
   \fancyhf{}
    % show logo of author's institution on the left side
   \fancyhead[L]{\raisebox{\dimexpr-\height+\baselineskip}[0pt][0pt]{
-   \includegraphics[width=7cm,height=4cm,keepaspectratio]{\pImagePath}
+    \includelogo
   }}
   % show address on the rigt side
   \fancyhead[R]{\leavevmode\large
